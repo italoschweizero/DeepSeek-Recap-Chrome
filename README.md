@@ -7,6 +7,8 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 - 📝 **Tasto destro su una selezione** → *"Riassumi la selezione con DeepSeek"*
 - 📄 **Tasto destro su una pagina** → *"Riassumi la pagina con DeepSeek"*
 - 🚀 Azione rapida dal **popup** dell'estensione ("Riassumi questa pagina")
+- 🪟 **Popup nella pagina corrente** — nessuna nuova scheda aperta
+- 🎯 **Riassunto limitato a 2000 caratteri**
 - ⚙️ **Impostazioni** per chiave API, lingua del riassunto e modello
 - 📋 Copia del riassunto con un clic
 
@@ -23,7 +25,11 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 
 1. Su qualsiasi pagina web seleziona del testo (o non selezionare nulla per riassumere l'intera pagina).
 2. Fai **tasto destro** e scegli la voce **DeepSeek Recap**.
-3. Si aprirà una scheda con il riassunto generato.
+3. Nella stessa pagina apparirà un **popup** con il riassunto generato (massimo **2000 caratteri**), con pulsanti per **copiare**, **riprovare** e aprire la **pagina originale**.
+
+## Limite di lunghezza
+
+Il riassunto viene sempre troncato a un massimo di **2000 caratteri**. Anche il prompt inviato a DeepSeek chiede esplicitamente di non superare questo limite.
 
 ## Configurazione
 
@@ -38,8 +44,8 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 ```
 DeepSeek-Recap-Chrome/
 ├── manifest.json      # Configurazione Manifest V3
-├── background.js      # Service worker: menu contestuale ed estrazione testo
-├── summary.html|css|js # Pagina dei risultati (chiamata all'API DeepSeek)
+├── background.js      # Service worker: menu contestuale, estrazione testo, chiamata all'API
+├── content.js         # Content script: popup overlay nella pagina (Shadow DOM)
 ├── popup.html|css|js  # Popup rapido dell'estensione
 ├── options.html|css|js # Impostazioni (chiave API, lingua, modello)
 ├── icons/             # Icone dell'estensione
@@ -52,3 +58,4 @@ DeepSeek-Recap-Chrome/
 - La chiave API viene conservata **solo sul tuo computer** tramite `chrome.storage.local`.
 - Le richieste vanno direttamente a `https://api.deepseek.com` (il testo selezionato viene inviato a DeepSeek per il riassunto).
 - Per le pagine protette (`chrome://`, Web Store, ecc.) l'estensione non può leggere il contenuto.
+- Il riassunto viene mostrato in un **popup (overlay)** all'interno della pagina corrente; non vengono aperte nuove schede.

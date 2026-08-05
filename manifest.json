@@ -3,7 +3,7 @@
   "name": "DeepSeek Recap",
   "version": "1.0.0",
   "description": "Riassumi testo selezionato o pagine intere con DeepSeek usando il tasto destro del mouse.",
-  "permissions": ["contextMenus", "storage", "scripting", "activeTab"],
+  "permissions": ["contextMenus", "storage", "scripting", "activeTab", "notifications"],
   "host_permissions": ["https://api.deepseek.com/*"],
   "background": {
     "service_worker": "background.js"

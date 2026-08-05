@@ -1,118 +1,179 @@
 // DeepSeek Recap — background service worker (Manifest V3)
-// Gestisce il menu contestuale (tasto destro) e l'estrazione del testo.
+// Gestisce il menu contestuale (tasto destro), l'estrazione del testo e la
+// chiamata all'API DeepSeek. Il risultato viene mostrato in un popup
+// (overlay) nella stessa pagina, senza aprire nuove schede.
 
+const API_URL = "https://api.deepseek.com/chat/completions";
 const MAX_TEXT_CHARS = 60000;
+const MAX_SUMMARY_CHARS = 2000;
+const VALID_MODELS = ["deepseek-v4-flash", "deepseek-v4-pro"];
 
-// Crea le voci del menu contestuale all'installazione/avvio.
+// ---- Menu contestuale ----
+
 function createContextMenus() {
   chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({
-      id: "recap-selection",
-      title: "Riassumi la selezione con DeepSeek",
-      contexts: ["selection"]
-    });
-    chrome.contextMenus.create({
-      id: "recap-page",
-      title: "Riassumi la pagina con DeepSeek",
-      contexts: ["page"]
-    });
+    chrome.contextMenus.create({ id: "recap-selection", title: "Riassumi la selezione con DeepSeek", contexts: ["selection"] });
+    chrome.contextMenus.create({ id: "recap-page", title: "Riassumi la pagina con DeepSeek", contexts: ["page"] });
   });
 }
 
 chrome.runtime.onInstalled.addListener(createContextMenus);
 chrome.runtime.onStartup.addListener(createContextMenus);
 
-// Click sulle voci del menu contestuale.
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "recap-selection") {
     const text = (info.selectionText || "").trim();
-    if (text) openRecapTab({ text, tab });
+    if (text) startRecap({ text, tab });
   } else if (info.menuItemId === "recap-page") {
-    summarizePageTab(tab);
+    extractPageAndStart(tab);
   }
 });
 
-// Messaggio inviato dal popup ("Riassumi questa pagina").
+// ---- Messaggi ----
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg && msg.type === "summarize-page") {
-    summarizePageTab({ id: msg.tabId, title: msg.title, url: msg.url });
+    // Richiesta dal popup dell'estensione.
+    extractPageAndStart({ id: msg.tabId, title: msg.title, url: msg.url });
     sendResponse({ ok: true });
+    return false;
+  }
+
+  if (msg && msg.type === "deepseek-recap-fetch") {
+    // Chiamata all'API DeepSeek richiesta dal content script.
+    // `return true` mantiene il service worker attivo finché rispondiamo.
+    runRecapFetch(msg.text)
+      .then((summary) => sendResponse({ ok: true, summary }))
+      .catch((err) => sendResponse({ ok: false, error: err.message }));
     return true;
   }
+
   return false;
 });
 
-// Estrae il testo del corpo della pagina corrente.
-function summarizePageTab(tab) {
+// ---- Estrazione del testo della pagina ----
+
+function extractPageAndStart(tab) {
   if (!tab || !tab.id) return;
   chrome.scripting
     .executeScript({ target: { tabId: tab.id }, func: extractPageText })
     .then(([{ result }]) => {
       const text = (result || "").trim();
-      if (text) openRecapTab({ text, tab });
-      else notifyError("Non è stato possibile estrarre testo dalla pagina.");
+      if (text) startRecap({ text, tab });
+      else showNotification("Non è stato possibile estrarre testo dalla pagina.");
     })
     .catch(() =>
-      notifyError(
-        "Impossibile leggere questa pagina. Le pagine speciali (chrome://, Web Store, pagine aziendali protette) non sono supportate."
-      )
+      showNotification("Impossibile leggere questa pagina (chrome://, Web Store, ecc. non sono supportati).")
     );
 }
 
-// Funzione iniettata nella pagina: clona il body, rimuove elementi non testuali
-// e restituisce il testo visibile.
+// Funzione iniettata nella pagina: restituisce il testo visibile del body.
 function extractPageText() {
   const body = document.body;
   if (!body) return "";
   const clone = body.cloneNode(true);
   clone
-    .querySelectorAll(
-      "script, style, noscript, template, iframe, svg, canvas, video, audio, textarea, input, button, nav, footer"
-    )
+    .querySelectorAll("script, style, noscript, template, iframe, svg, canvas, video, audio, textarea, input, button, nav, footer")
     .forEach((el) => el.remove());
   return (clone.innerText || "").replace(/[ \t]+\n/g, "\n").trim();
 }
 
-function truncate(text, max = MAX_TEXT_CHARS) {
-  if (text.length <= max) return text;
-  return (
-    text.slice(0, max) +
-    "\n… [contenuto troncato perché troppo lungo per la richiesta]"
-  );
-}
+// ---- Avvio del riassunto nella pagina corrente ----
 
-// Salva il testo estratto e apre la pagina dei risultati.
-async function openRecapTab({ text, tab }) {
-  const recap = {
+async function startRecap({ text, tab }) {
+  if (!tab || !tab.id) return;
+  const payload = {
+    type: "deepseek-recap",
     status: "loading",
     text: truncate(text),
     tabTitle: (tab && tab.title) || "",
-    tabUrl: (tab && tab.url) || "",
-    summary: "",
-    error: "",
-    requestedAt: Date.now()
+    tabUrl: (tab && tab.url) || ""
   };
-  await chrome.storage.local.set({ recap });
-  const url = chrome.runtime.getURL("summary.html");
-  if (tab && tab.windowId != null) {
-    chrome.tabs.create({ url, index: (tab.index || 0) + 1, active: true });
-  } else {
-    chrome.tabs.create({ url, active: true });
+  try {
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["content.js"] });
+    await chrome.tabs.sendMessage(tab.id, payload);
+  } catch (_) {
+    showNotification("Impossibile mostrare il riassunto in questa pagina (chrome://, Web Store, ecc.).");
   }
 }
 
-// Salva un errore e apre la pagina dei risultati per mostrarlo.
-function notifyError(message) {
-  chrome.storage.local.set({
-    recap: {
-      status: "error",
-      error: message,
-      text: "",
-      tabTitle: "",
-      tabUrl: "",
-      summary: "",
-      requestedAt: Date.now()
-    }
+// ---- Chiamata all'API DeepSeek (richiesta dal content script) ----
+
+async function runRecapFetch(text) {
+  const { settings = {} } = await chrome.storage.local.get("settings");
+  if (!settings.apiKey) {
+    chrome.runtime.openOptionsPage();
+    throw new Error("Nessuna chiave API configurata: apri le Impostazioni dell'estensione.");
+  }
+  return callDeepSeek(settings, text);
+}
+
+async function callDeepSeek(settings, text) {
+  const language =
+    settings.language === "auto"
+      ? "la stessa lingua del contenuto originale"
+      : settings.language || "italiano";
+  const model = VALID_MODELS.includes(settings.model) ? settings.model : "deepseek-v4-flash";
+
+  const system =
+    "Sei un assistente esperto nella creazione di riassunti. " +
+    `Scrivi il riassunto in ${language}. ` +
+    `Il riassunto NON deve superare ${MAX_SUMMARY_CHARS} caratteri (mai di più). ` +
+    "Inizia con un riepilogo generale di 2-3 frasi, poi elenca i punti chiave. " +
+    "Sii conciso, fedele al contenuto originale e non inventare informazioni.";
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${settings.apiKey}` },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: text }
+      ],
+      temperature: 0.3,
+      max_tokens: 1500,
+      stream: false
+    })
   });
-  chrome.tabs.create({ url: chrome.runtime.getURL("summary.html"), active: true });
+
+  if (!res.ok) {
+    let msg = `Errore API DeepSeek (HTTP ${res.status})`;
+    try {
+      const data = await res.json();
+      msg += data && data.error && data.error.message ? `: ${data.error.message}` : `: ${JSON.stringify(data)}`;
+    } catch (_) {
+      msg += `: ${(await res.text()).slice(0, 300)}`;
+    }
+    throw new Error(msg);
+  }
+
+  const data = await res.json();
+  const content =
+    data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "";
+  if (!content) throw new Error("Risposta vuota da DeepSeek.");
+  return content;
+}
+
+// ---- Utility ----
+
+function truncate(text) {
+  return text.length <= MAX_TEXT_CHARS
+    ? text
+    : text.slice(0, MAX_TEXT_CHARS) + "\n… [contenuto troncato perché troppo lungo]";
+}
+
+function showNotification(message) {
+  try {
+    chrome.notifications
+      .create({
+        type: "basic",
+        iconUrl: "icons/icon128.png",
+        title: "DeepSeek Recap",
+        message: String(message).slice(0, 250)
+      })
+      .catch(() => {});
+  } catch (_) {
+    /* il permesso "notifications" evita errori qui */
+  }
 }
