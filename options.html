@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek Recap — Impostazioni</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ DeepSeek Recap</h1>
+      <p class="sub">Impostazioni</p>
+    </header>
+
+    <main>
+      <form id="settings-form">
+        <label for="api-key">Chiave API DeepSeek</label>
+        <input type="password" id="api-key" autocomplete="off" spellcheck="false"
+               placeholder="sk-…">
+        <p class="hint">
+          La chiave è salvata solo sul tuo computer (chrome.storage.local).
+          Puoi crearla su
+          <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">
+            platform.deepseek.com/api_keys
+          </a>.
+        </p>
+
+        <label for="language">Lingua del riassunto</label>
+        <select id="language">
+          <option value="italiano">Italiano</option>
+          <option value="inglese">Inglese</option>
+          <option value="spagnolo">Spagnolo</option>
+          <option value="francese">Francese</option>
+          <option value="tedesco">Tedesco</option>
+          <option value="portoghese">Portoghese</option>
+          <option value="auto">Stessa lingua del contenuto</option>
+        </select>
+
+        <label for="model">Modello</label>
+        <select id="model">
+          <option value="deepseek-chat">deepseek-chat (DeepSeek-V3)</option>
+          <option value="deepseek-reasoner">deepseek-reasoner (DeepSeek-R1)</option>
+        </select>
+
+        <div class="buttons">
+          <button type="submit" class="primary">Salva</button>
+          <button type="button" id="btn-test">Testa connessione</button>
+        </div>
+
+        <p id="status" class="status" role="status"></p>
+      </form>
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
