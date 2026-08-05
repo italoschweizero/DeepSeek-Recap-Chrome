@@ -13,7 +13,7 @@ async function load() {
   const { settings = {} } = await chrome.storage.local.get("settings");
   els.key.value = settings.apiKey || "";
   els.language.value = settings.language || "italiano";
-  els.model.value = settings.model || "deepseek-chat";
+  els.model.value = settings.model || "deepseek-v4-flash";
 }
 
 async function save() {

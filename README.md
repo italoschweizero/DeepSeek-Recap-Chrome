@@ -31,7 +31,7 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 |---|---|
 | Chiave API | Chiave personale da `platform.deepseek.com/api_keys` (salvata solo in locale) |
 | Lingua | Italiano, Inglese, ecc., oppure "stessa lingua del contenuto" |
-| Modello | `deepseek-chat` (V3) o `deepseek-reasoner` (R1) |
+| Modello | `deepseek-v4-flash` (V4 Flash) o `deepseek-v4-pro` (V4 Pro) |
 
 ## Struttura del progetto
 
