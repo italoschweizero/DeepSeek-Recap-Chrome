@@ -6,7 +6,7 @@
   if (window.__deepseekRecapLoaded) return;
   window.__deepseekRecapLoaded = true;
 
-  const MAX_SUMMARY_CHARS = 2000;
+  const MAX_SUMMARY_CHARS = 500;
 
   const STYLE = `
 .overlay{position:fixed;top:20px;right:20px;width:420px;max-width:calc(100vw - 40px);max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:#fff;color:#1a2333;font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;border:1px solid #dbe1ec;border-radius:12px;box-shadow:0 12px 40px rgba(15,23,42,.28);z-index:2147483647;overflow:hidden}

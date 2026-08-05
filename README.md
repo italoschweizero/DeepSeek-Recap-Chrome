@@ -8,7 +8,7 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 - 📄 **Tasto destro su una pagina** → *"Riassumi la pagina con DeepSeek"*
 - 🚀 Azione rapida dal **popup** dell'estensione ("Riassumi questa pagina")
 - 🪟 **Popup nella pagina corrente** — nessuna nuova scheda aperta
-- 🎯 **Riassunto limitato a 2000 caratteri**
+- 🎯 **Riassunto limitato a 500 caratteri**
 - ⚙️ **Impostazioni** per chiave API, lingua del riassunto e modello
 - 📋 Copia del riassunto con un clic
 
@@ -25,11 +25,11 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 
 1. Su qualsiasi pagina web seleziona del testo (o non selezionare nulla per riassumere l'intera pagina).
 2. Fai **tasto destro** e scegli la voce **DeepSeek Recap**.
-3. Nella stessa pagina apparirà un **popup** con il riassunto generato (massimo **2000 caratteri**), con pulsanti per **copiare**, **riprovare** e aprire la **pagina originale**.
+3. Nella stessa pagina apparirà un **popup** con il riassunto generato (massimo **500 caratteri**), con pulsanti per **copiare**, **riprovare** e aprire la **pagina originale**.
 
 ## Limite di lunghezza
 
-Il riassunto viene sempre troncato a un massimo di **2000 caratteri**. Anche il prompt inviato a DeepSeek chiede esplicitamente di non superare questo limite.
+Il riassunto viene sempre troncato a un massimo di **500 caratteri**. Anche il prompt inviato a DeepSeek chiede esplicitamente di non superare questo limite.
 
 ## Configurazione
 

@@ -5,7 +5,7 @@
 
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MAX_TEXT_CHARS = 60000;
-const MAX_SUMMARY_CHARS = 2000;
+const MAX_SUMMARY_CHARS = 500;
 const VALID_MODELS = ["deepseek-v4-flash", "deepseek-v4-pro"];
 
 // ---- Menu contestuale ----
