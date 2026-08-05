@@ -6,6 +6,7 @@
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MAX_TEXT_CHARS = 60000;
 const MAX_SUMMARY_CHARS = 500;
+const MIN_SELECTION_WORDS = 5;
 const VALID_MODELS = ["deepseek-v4-flash", "deepseek-v4-pro"];
 
 // ---- Menu contestuale ----
@@ -23,7 +24,14 @@ chrome.runtime.onStartup.addListener(createContextMenus);
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "recap-selection") {
     const text = (info.selectionText || "").trim();
-    if (text) startRecap({ text, tab });
+    if (!text) return;
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+    if (wordCount <= MIN_SELECTION_WORDS) {
+      // Selezione troppo corta (≤ 5 parole): riassumi l'intera pagina.
+      extractPageAndStart(tab);
+    } else {
+      startRecap({ text, tab });
+    }
   } else if (info.menuItemId === "recap-page") {
     extractPageAndStart(tab);
   }

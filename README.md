@@ -5,6 +5,7 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 ## Funzionalità
 
 - 📝 **Tasto destro su una selezione** → *"Riassumi la selezione con DeepSeek"*
+- 🖱️ **Selezione intelligente**: fino a **5 parole** selezionate → riassunto dell'**intera pagina**; più di 5 parole → riassunto della sola selezione
 - 📄 **Tasto destro su una pagina** → *"Riassumi la pagina con DeepSeek"*
 - 🚀 Azione rapida dal **popup** dell'estensione ("Riassumi questa pagina")
 - 🪟 **Popup nella pagina corrente** — nessuna nuova scheda aperta
@@ -27,6 +28,8 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 1. Su qualsiasi pagina web seleziona del testo (o non selezionare nulla per riassumere l'intera pagina).
 2. Fai **tasto destro** e scegli la voce **DeepSeek Recap**.
 3. Nella stessa pagina apparirà un **popup** con il riassunto generato (massimo **500 caratteri**), con pulsanti per **copiare**, **riprovare** e aprire la **pagina originale**.
+
+> **Nota:** se la selezione contiene **5 o meno parole**, l'estensione riassume automaticamente **l'intera pagina**. Se la selezione è più lunga, considera **solo il testo selezionato**.
 
 ## Limite di lunghezza
 
