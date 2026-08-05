@@ -1,6 +1,6 @@
 # ⚡ DeepSeek Recap
 
-Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo selezionato o pagine intere** con **DeepSeek** usando il **tasto destro** del mouse.
+Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo selezionato o pagine intere** con **DeepSeek** usando il **tasto destro** del mouse. Il risultato appare in un **popup nella pagina corrente**, senza aprire nuove schede.
 
 ## Funzionalità
 
@@ -26,14 +26,24 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 ## Utilizzo
 
 1. Su qualsiasi pagina web seleziona del testo (o non selezionare nulla per riassumere l'intera pagina).
-2. Fai **tasto destro** e scegli la voce **DeepSeek Recap**.
+2. Fai **tasto destro** e scegli una delle voci **DeepSeek Recap**.
 3. Nella stessa pagina apparirà un **popup** con il riassunto generato (massimo **500 caratteri**), con pulsanti per **copiare**, **riprovare** e aprire la **pagina originale**.
 
-> **Nota:** se la selezione contiene **5 o meno parole**, l'estensione riassume automaticamente **l'intera pagina**. Se la selezione è più lunga, considera **solo il testo selezionato**.
+### Comportamento della selezione
+
+| Selezione | Cosa viene riassunto |
+|---|---|
+| **Fino a 5 parole** | L'intera pagina (per evitare riassunti poco utili di selezioni troppo brevi) |
+| **Più di 5 parole** | Solo il testo selezionato |
+| Nessuna selezione (voce "Riassumi la pagina") | L'intera pagina |
 
 ## Limite di lunghezza
 
 Il riassunto viene sempre troncato a un massimo di **500 caratteri**. Anche il prompt inviato a DeepSeek chiede esplicitamente di non superare questo limite.
+
+## Tema
+
+L'overlay del riassunto si adatta automaticamente al **tema chiaro o scuro** del dispositivo (`prefers-color-scheme`), senza bisogno di alcuna impostazione.
 
 ## Configurazione
 
@@ -41,7 +51,7 @@ Il riassunto viene sempre troncato a un massimo di **500 caratteri**. Anche il p
 |---|---|
 | Chiave API | Chiave personale da `platform.deepseek.com/api_keys` (salvata solo in locale) |
 | Lingua | Italiano, Inglese, ecc., oppure "stessa lingua del contenuto" |
-| Modello | `deepseek-v4-flash` (V4 Flash) o `deepseek-v4-pro` (V4 Pro) |
+| Modello | `deepseek-v4-flash` (**predefinito**) o `deepseek-v4-pro` (V4 Pro) |
 
 ## Struttura del progetto
 
