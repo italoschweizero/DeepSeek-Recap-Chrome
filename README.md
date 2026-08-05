@@ -9,6 +9,7 @@ Estensione per Google Chrome (Manifest V3) che permette di **riassumere testo se
 - 🚀 Azione rapida dal **popup** dell'estensione ("Riassumi questa pagina")
 - 🪟 **Popup nella pagina corrente** — nessuna nuova scheda aperta
 - 🎯 **Riassunto limitato a 500 caratteri**
+- 🌗 **Tema adattivo** — l'overlay segue automaticamente il tema chiaro/scuro del dispositivo
 - ⚙️ **Impostazioni** per chiave API, lingua del riassunto e modello
 - 📋 Copia del riassunto con un clic
 

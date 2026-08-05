@@ -32,6 +32,21 @@
 .body code{background:#eef1f7;border-radius:4px;padding:1px 5px;font-family:Menlo,Consolas,monospace;font-size:12px}
 .error{color:#c62828;background:#fdecec;border:1px solid #f5c2c2;border-radius:8px;padding:12px 14px;font-size:13px}
 .hidden{display:none !important}
+@media (prefers-color-scheme: dark){
+.overlay{background:#1a1f2b;color:#e6e9f0;border-color:#2e3648;box-shadow:0 12px 40px rgba(0,0,0,.55);color-scheme:dark}
+.head{border-bottom-color:#2e3648;background:#161b25}
+.link{color:#7da2ff}
+.close{color:#9aa4b5}
+.close:hover{background:#2e3648;color:#fff}
+.foot{border-top-color:#2e3648;background:#161b25}
+.foot button{border-color:#3a4356;background:#232a38;color:#e6e9f0}
+.foot button:hover{background:#2e3648}
+.count{color:#9aa4b5}
+.loading{color:#9aa4b5}
+.spinner{border:3px solid #2e3648;border-top-color:#7da2ff}
+.body code{background:#2a3242}
+.error{color:#ff8a80;background:#2b1d20;border-color:#5c2a2e}
+}
 `;
 
   let host = null;
