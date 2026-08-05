@@ -9,18 +9,22 @@ const els = {
   status: document.getElementById("status")
 };
 
+const VALID_MODELS = ["deepseek-v4-flash", "deepseek-v4-pro"];
+
 async function load() {
   const { settings = {} } = await chrome.storage.local.get("settings");
   els.key.value = settings.apiKey || "";
   els.language.value = settings.language || "italiano";
-  els.model.value = settings.model || "deepseek-v4-flash";
+  els.model.value = VALID_MODELS.includes(settings.model)
+    ? settings.model
+    : "deepseek-v4-flash";
 }
 
 async function save() {
   const settings = {
     apiKey: els.key.value.trim(),
     language: els.language.value,
-    model: els.model.value
+    model: VALID_MODELS.includes(els.model.value) ? els.model.value : "deepseek-v4-flash"
   };
   await chrome.storage.local.set({ settings });
   flash("Impostazioni salvate ✓", "ok");

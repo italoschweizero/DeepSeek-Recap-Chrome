@@ -80,7 +80,9 @@ async function callDeepSeek(settings, text) {
     settings.language === "auto"
       ? "la stessa lingua del contenuto originale"
       : settings.language || "italiano";
-  const model = settings.model || "deepseek-v4-flash";
+  const model = ["deepseek-v4-flash", "deepseek-v4-pro"].includes(settings.model)
+    ? settings.model
+    : "deepseek-v4-flash";
 
   const system =
     "Sei un assistente esperto nella creazione di riassunti. " +
